@@ -2,6 +2,8 @@ package com.example.TestSecurity.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,12 +29,17 @@ public class SecurityConfig {
         //스프링부트 3.1 ~ , 스프링 6.1 ~ 부터는 필수적으로 람다표현식으로 처리
         http
                 .authorizeHttpRequests(auth -> auth
-                        //permitAll(): 모든 사용자 접근, hasRole(): 특정 규칙이 부합한 사용자만 접근
+                        //permitAll(): 모든 사용자 접근,
+                        // hasRole(): 특정 규칙이 부합한 사용자만 접근, hasAnyRole() : 여러가지 역할중 하나라도 가진 사용자 접근 허용  ROLE_ 가 자동으로 붙음
                         //authenticated(): 로그인된 유저 다 허용, denyAll(): 모든 사용자 접근 불가
                         //해당 경로 인가는 상단부터 적용되니 순서 중요
-                        .requestMatchers("/", "/login", "/loginProc","/join","/joinProc").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
+//                        .requestMatchers("/", "/login", "/loginProc","/join","/joinProc").permitAll()
+//                        .requestMatchers("/admin").hasRole("ADMIN")
+//                        .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/").hasAnyRole("A")
+                        .requestMatchers("/manager").hasAnyRole("B")
+                        .requestMatchers("/admin").hasAnyRole("C")
                         .anyRequest().authenticated()
                 );
         //폼로그인방식
@@ -83,23 +90,41 @@ public class SecurityConfig {
 
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//
-//        UserDetails user1 = User.builder()
-//                .username("user1")
-//                .password(bCryptPasswordEncoder().encode("1234"))
-//                .roles("ADMIN")
+    @Bean
+    //권한들의 계층 사용
+    public RoleHierarchy roleHierarchy() {
+        //권한이 C > B > A
+        return RoleHierarchyImpl.fromHierarchy(
+                """
+                ROLE_C > ROLE_B
+                ROLE_B > ROLE_A
+                """
+        );
+        // 자동으로 ROLE_ 붙여주는 방식
+//        return RoleHierarchyImpl.withDefaultRolePrefix()
+//                .role("C").implies("B")
+//                .role("B").implies("A")
 //                .build();
-//
-//        UserDetails user2 = User.builder()
-//                .username("user2")
-//                .password(bCryptPasswordEncoder().encode("1234"))
-//                .roles("USER")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(user1, user2);
-//    }
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+
+        UserDetails user1 = User.builder()
+                .username("user1")
+                .password(bCryptPasswordEncoder().encode("1234"))
+                .roles("A")
+//                .roles("C")
+                .build();
+
+        UserDetails user2 = User.builder()
+                .username("user2")
+                .password(bCryptPasswordEncoder().encode("1234"))
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(user1, user2);
+    }
 
 
 }
