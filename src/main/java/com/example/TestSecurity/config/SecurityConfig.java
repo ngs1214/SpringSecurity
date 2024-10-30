@@ -36,10 +36,10 @@ public class SecurityConfig {
 //                        .requestMatchers("/", "/login", "/loginProc","/join","/joinProc").permitAll()
 //                        .requestMatchers("/admin").hasRole("ADMIN")
 //                        .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/").hasAnyRole("A")
-                        .requestMatchers("/manager").hasAnyRole("B")
-                        .requestMatchers("/admin").hasAnyRole("C")
+                        .requestMatchers("/login","/loginProc","/join","/joinProc").permitAll()
+                        .requestMatchers("/","/logout").hasAnyRole("USER")
+                        .requestMatchers("/manager").hasAnyRole("MANAGER")
+                        .requestMatchers("/admin").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 );
         //폼로그인방식
@@ -94,37 +94,36 @@ public class SecurityConfig {
     //권한들의 계층 사용
     public RoleHierarchy roleHierarchy() {
         //권한이 C > B > A
-        return RoleHierarchyImpl.fromHierarchy(
-                """
-                ROLE_C > ROLE_B
-                ROLE_B > ROLE_A
-                """
-        );
+//        return RoleHierarchyImpl.fromHierarchy(
+//                """
+//                ROLE_C > ROLE_B
+//                ROLE_B > ROLE_A
+//                """
+//        );
         // 자동으로 ROLE_ 붙여주는 방식
-//        return RoleHierarchyImpl.withDefaultRolePrefix()
-//                .role("C").implies("B")
-//                .role("B").implies("A")
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("MANAGER")
+                .role("MANAGER").implies("USER")
+                .build();
+    }
+
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//
+//        UserDetails user1 = User.builder()
+//                .username("user1")
+//                .password(bCryptPasswordEncoder().encode("1234"))
+//                .roles("ADMIN")
 //                .build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-
-        UserDetails user1 = User.builder()
-                .username("user1")
-                .password(bCryptPasswordEncoder().encode("1234"))
-                .roles("A")
-//                .roles("C")
-                .build();
-
-        UserDetails user2 = User.builder()
-                .username("user2")
-                .password(bCryptPasswordEncoder().encode("1234"))
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user1, user2);
-    }
+//
+//        UserDetails user2 = User.builder()
+//                .username("user2")
+//                .password(bCryptPasswordEncoder().encode("1234"))
+//                .roles("USER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(user1, user2);
+//    }
 
 
 }
