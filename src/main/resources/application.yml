@@ -1,0 +1,10 @@
+#spring.application.name=TestSecurity
+
+spring:
+  application:
+    name: TestSecurity
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/security?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: root
+    password: 1
