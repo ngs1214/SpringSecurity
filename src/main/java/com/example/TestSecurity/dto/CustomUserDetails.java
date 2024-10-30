@@ -6,12 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+
 
 public class CustomUserDetails implements UserDetails {
 
-    private UserEntity userEntity;
+    private final UserEntity userEntity;
 
     public CustomUserDetails(UserEntity userEntity) {
         this.userEntity = userEntity;
