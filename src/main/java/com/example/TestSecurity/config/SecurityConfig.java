@@ -31,13 +31,21 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
         //개발환경에서 csrf설정 해제
-        http
-                .csrf(auth -> auth.disable());
+        //요청을 위조하여 사용자가 원하지 않아도 서버측으로 요청을 해서 강제로 변경
+        //사용하면(기본값 사용) CsrfFilter를 통해서 토큰검증을 진행함
+        //예제로그인시에 해당 토큰도 같이 넘겨줘야함
+        //api서버 같은 경우는 필요없음
+//        http
+//                .csrf(auth -> auth.disable());
+
 
         http
                 .formLogin(auth -> auth.loginPage("/login")
                         .loginProcessingUrl("/loginProc").permitAll()
                 );
+        http
+                .logout((auth) -> auth.logoutUrl("/logout")
+                        .logoutSuccessUrl("/"));
         http
                 .sessionManagement((auth) -> auth
                         //하나의 아이디 동시접속 개수
