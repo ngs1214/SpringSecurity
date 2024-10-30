@@ -25,7 +25,7 @@ public class SecurityConfig {
                         //permitAll(): 모든 사용자 접근, hasRole(): 특정 규칙이 부합한 사용자만 접근
                         //authenticated(): 로그인된 유저 다 허용, denyAll(): 모든 사용자 접근 불가
                         //해당 경로 인가는 상단부터 적용되니 순서 중요
-                        .requestMatchers("/", "/login").permitAll()
+                        .requestMatchers("/", "/login", "/loginProc","/join","/joinProc").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
