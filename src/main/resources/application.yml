@@ -1,4 +1,11 @@
 #spring.application.name=TestSecurity
+#?? ????
+server:
+  servlet:
+    session:
+#      timeout: 90m
+      timeout: 1800
+
 
 spring:
   application:

@@ -38,7 +38,24 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.loginPage("/login")
                         .loginProcessingUrl("/loginProc").permitAll()
                 );
+        http
+                .sessionManagement((auth) -> auth
+                        //하나의 아이디 동시접속 개수
+                        .maximumSessions(1)
+                        //위에 갯수를 초과하는 다중로그인시 기존 로그인처리 방법
+                        //true : 초과시 새로운 로그인 차단
+                        //false : 초과시 기존 세션 하나 삭제
+                        .maxSessionsPreventsLogin(true)
+                );
 
+        http
+                .sessionManagement((auth) -> auth
+                        //세션 고정관련
+                        //해커가 세션을 탈취하여 해킹함을 방지
+                        //newSession() : 로그인시 세션 새로 생성
+                        //changeSessionId() : 로그인시 동일한 세션에 대한 id변경
+                        .sessionFixation().changeSessionId()
+                );
         return http.build();
 
     }
